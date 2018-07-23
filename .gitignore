@@ -1,0 +1,11 @@
+*.iml
+*.ipr
+*.iws
+target/
+.idea
+.DS_Store
+.classpath
+.settings
+.project
+*~
+*.class
