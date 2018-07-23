@@ -59,13 +59,21 @@ public class TaskExecutor
         {
             while (!closed && !Thread.currentThread().isInterrupted()) {
                 // dequeue next take from queue
+                final FunctionAction func;
                 try {
-                    FunctionAction func = taskQueue.take();
+                    func = taskQueue.take();
+                }
+                catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+
+                // execute the function action
+                try {
                     func.exec();
-                } catch (Exception e) {
-                    if (!(e instanceof InterruptedException)) {
-                        e.printStackTrace();
-                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }
