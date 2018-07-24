@@ -38,6 +38,11 @@
             <artifactId>http-client</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- byte code generation -->
+        <dependency>
+            <groupId>pl.joegreen</groupId>
+            <artifactId>lambda-from-string</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

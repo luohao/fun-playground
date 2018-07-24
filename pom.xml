@@ -52,6 +52,12 @@
                 <version>${dep.testing.version}</version>
                 <scope>test</scope>
             </dependency>
+            <!-- byte code generation -->
+            <dependency>
+                <groupId>pl.joegreen</groupId>
+                <artifactId>lambda-from-string</artifactId>
+                <version>1.6</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
