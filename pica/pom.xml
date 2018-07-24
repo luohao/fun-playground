@@ -12,7 +12,6 @@
     <groupId>hluo.fun.playground</groupId>
     <artifactId>pica</artifactId>
 
-
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -21,6 +20,23 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>http-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>jaxrs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>bootstrap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>http-client</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
