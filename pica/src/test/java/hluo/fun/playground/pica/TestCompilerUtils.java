@@ -34,7 +34,7 @@ public class TestCompilerUtils
         CompilerUtils compiler = new CompilerUtils();
         try {
             ClassInfo classInfo = compiler.compileSingleSource(className, sourceCode);
-            FunctionAction testFunction = (FunctionAction) compiler.loadClass(classInfo).getDeclaredConstructor(String.class).newInstance("TestCompilerUtils");
+            FunctionAction testFunction = (FunctionAction) compiler.loadClass(classInfo).getDeclaredConstructor(String.class).newInstance("TestCompilerUtils-hluo");
             testFunction.exec();
         }
         catch (Exception e) {

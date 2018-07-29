@@ -10,23 +10,20 @@ import io.airlift.json.JsonModule;
 import io.airlift.node.testing.TestingNodeModule;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
 import static com.google.common.base.Throwables.throwIfUnchecked;
 import static io.airlift.jaxrs.JaxrsBinder.jaxrsBinder;
 
-public class PicaWorker
+public class PicaServer
         implements Closeable
 {
-    private PicaWorkerResource resource;
     private TestingHttpServer server;
 
-    public PicaWorker()
+    public PicaServer(boolean isMaster)
     {
-        this.resource = new PicaWorkerResource();
-        this.server = createPicaWorker(resource);
+        this.server = createPicaServer(isMaster);
     }
 
     public void start()
@@ -37,13 +34,13 @@ public class PicaWorker
 
     @Override
     public void close()
-            throws IOException
     {
         try {
             server.stop();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            throwIfUnchecked(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -52,19 +49,11 @@ public class PicaWorker
         return server.getBaseUrl();
     }
 
-
-    private static TestingHttpServer createPicaWorker(final PicaWorkerResource resource)
+    private static TestingHttpServer createPicaServer(final boolean isMaster)
     {
         try {
-            List<Module> modules = ImmutableList.<Module>builder()
-                    .add(new TestingNodeModule())
-                    .add(new JaxrsModule(true))
-                    .add(new JsonModule())
-                    .add(new TestingHttpServerModule())
-                    .add(binder -> jaxrsBinder(binder).bindInstance(resource))
-                    .build();
 
-            return new Bootstrap(modules)
+            return new Bootstrap(getServerModules(isMaster))
                     .strictConfig()
                     .doNotInitializeLogging()
                     .quiet()
@@ -75,5 +64,16 @@ public class PicaWorker
             throwIfUnchecked(e);
             throw new RuntimeException(e);
         }
+    }
+
+    private static List<Module> getServerModules(final boolean isMaster)
+    {
+        return ImmutableList.<Module>builder()
+                .add(new TestingNodeModule())
+                .add(new JaxrsModule(true))
+                .add(new JsonModule())
+                .add(new TestingHttpServerModule())
+                .add(binder -> jaxrsBinder(binder).bindInstance(isMaster ? new PicaMasterResource() : new PicaWorkerResource()))
+                .build();
     }
 }

@@ -9,7 +9,6 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -18,20 +17,22 @@ import java.util.List;
 
 public final class CompilerUtils
 {
-    private static JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+    private final JavaCompiler compiler;
     private final ClassFileManager classFileManager;
-    public CompilerUtils() {
-        this.classFileManager = new ClassFileManager(compiler.getStandardFileManager(null, null, null));
 
+    public CompilerUtils()
+    {
+        this.compiler = ToolProvider.getSystemJavaCompiler();
+        this.classFileManager = new ClassFileManager(compiler.getStandardFileManager(null, null, null));
     }
+
     // compile java code from source
     // TODO: should save the file and bytecode somewhere in the file system for future debugging
     public ClassInfo compileSingleSource(String className, String sourceCode)
-            throws IOException
     {
         List<JavaFileObject> sourceFiles = new ArrayList<JavaFileObject>();
         sourceFiles.add(new CharSequenceJavaFileObject(className, sourceCode));
-        List options = Arrays.asList("-classpath",System.getProperty("java.class.path"));
+        List options = Arrays.asList("-classpath", System.getProperty("java.class.path"));
         compiler.getTask(null, classFileManager, null, options,
                 null, sourceFiles).call();
 
@@ -41,7 +42,7 @@ public final class CompilerUtils
     public Class loadClass(ClassInfo classInfo)
             throws ClassNotFoundException
     {
-        ByteArrayClassLoader classLoader = new ByteArrayClassLoader(classInfo.getBytes());
+        ByteArrayClassLoader classLoader = new ByteArrayClassLoader(classInfo.getByteCode());
         return classLoader.loadClass(classInfo.getClasssName());
     }
 
@@ -111,18 +112,24 @@ public final class CompilerUtils
             return classObject;
         }
 
-        public byte[] getClassBytes() {
+        public byte[] getClassBytes()
+        {
             return classObject.getBytes();
         }
     }
 
-    private class ByteArrayClassLoader extends ClassLoader {
-        byte[] bytes;
+    private class ByteArrayClassLoader
+            extends ClassLoader
+    {
+        private final byte[] bytes;
 
-        public ByteArrayClassLoader(byte[] bytes) {
+        public ByteArrayClassLoader(byte[] bytes)
+        {
             this.bytes = bytes;
         }
-        public Class findClass(String name) {
+
+        public Class findClass(String name)
+        {
             return defineClass(name, bytes, 0, bytes.length);
         }
     }

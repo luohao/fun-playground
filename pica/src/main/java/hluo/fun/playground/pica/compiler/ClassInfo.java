@@ -1,24 +1,34 @@
 package hluo.fun.playground.pica.compiler;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jdk.nashorn.internal.ir.annotations.Immutable;
+
 import java.io.Serializable;
 
+@Immutable
 public class ClassInfo
         implements Serializable
 {
     private final String classsName;
-    private final byte[] bytes;
+    private final byte[] byteCode;
 
-    public ClassInfo(String classsName, byte[] bytes) {
+    @JsonCreator
+    public ClassInfo(@JsonProperty("classsName") String classsName,
+            @JsonProperty("byteCode")byte[] byteCode) {
         this.classsName = classsName;
-        this.bytes = bytes;
+        this.byteCode = byteCode;
     }
+
+    @JsonProperty
     public String getClasssName()
     {
         return classsName;
     }
 
-    public byte[] getBytes()
+    @JsonProperty
+    public byte[] getByteCode()
     {
-        return bytes;
+        return byteCode;
     }
 }
