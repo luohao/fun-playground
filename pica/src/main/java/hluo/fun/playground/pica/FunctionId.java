@@ -38,4 +38,17 @@ public final class FunctionId
 
     @Override
     public int hashCode() { return Objects.hash(id); }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        FunctionId other = (FunctionId) obj;
+        return Objects.equals(this.id, other.id);
+    }
 }

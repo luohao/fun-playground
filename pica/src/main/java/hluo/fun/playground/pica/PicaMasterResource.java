@@ -47,12 +47,6 @@ public class PicaMasterResource
         FunctionId id = FunctionId.valueOf("test-function-1");
         functions.put(id, classInfo);
 
-        try {
-            FunctionAction testFunction = (FunctionAction) compiler.loadClass(classInfo).getDeclaredConstructor(String.class).newInstance("test-function-1");
-            testFunction.exec();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         // prepare response
         return Response.ok(id).build();
     }
@@ -71,10 +65,11 @@ public class PicaMasterResource
     @GET
     @Path("{functionId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getFunction()
+    public Response getFunction(@PathParam("functionId") FunctionId functionId)
     {
-        System.out.println("======== List all functions! ========");
-        return Response.ok().build();
+        System.out.println("======== Get function info " + functionId +"! ========");
+        ClassInfo classInfo = functions.get(functionId);
+        return Response.ok().entity(classInfo).build();
     }
 
     @DELETE

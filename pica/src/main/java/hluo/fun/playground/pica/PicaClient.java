@@ -22,6 +22,7 @@ public class PicaClient
     private static final JsonCodec<FunctionId> FUNCTION_ID_JSON_CODEC = jsonCodec(FunctionId.class);
     private static final JsonCodec<List<FunctionId>> FUNCTION_ID_LIST_JSON_CODEC = listJsonCodec(FunctionId.class);
     private final URI masterUrl;
+    // TODO: consider using io.airlift.http-client
     private final OkHttpClient httpClient;
 
     public PicaClient(URI masterUrl)
@@ -83,7 +84,7 @@ public class PicaClient
         if (url == null) {
             return;
         }
-        url = url.newBuilder().encodedPath("/v1/functions/" + functionId).build();
+        url = url.newBuilder().encodedPath("/v1/functions/" + functionId.getId()).build();
 
         Request request = new Request.Builder()
                 .url(url)

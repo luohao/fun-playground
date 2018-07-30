@@ -1,7 +1,10 @@
 package hluo.fun.playground.pica;
 
+import hluo.fun.playground.pica.compiler.ClassInfo;
+import hluo.fun.playground.pica.compiler.CompilerUtils;
 import org.testng.annotations.Test;
 
+import static java.lang.Thread.sleep;
 import static org.testng.AssertJUnit.assertNotNull;
 
 public class TestPicaServer
@@ -37,11 +40,23 @@ public class TestPicaServer
                     .toString();
             PicaClient client = new PicaClient(master.getBaseUrl());
             FunctionId id = client.submitFunction(className, sourceCode);
+            assertNotNull("function id is null", id);
 
             client.listFunction().stream().forEach(x -> System.out.println(x));
 
-            assertNotNull("function id is null", id);
+            // get function info
+            try {
+                ClassInfo classInfo = ClientUtils.getClassInfo(master.getBaseUrl(), id);
+                CompilerUtils compiler = new CompilerUtils();
+                FunctionAction testFunction = (FunctionAction) compiler.loadClass(classInfo).getDeclaredConstructor(String.class).newInstance("test-pica-server-from-client");
+                testFunction.exec();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             client.stopFunction(id);
+
+            // wait for the function to stop
+            sleep(3);
         }
         finally {
             master.close();
