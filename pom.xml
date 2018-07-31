@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>pica</module>
+        <module>psi</module>
     </modules>
 
     <properties>
@@ -41,6 +41,11 @@
                 <version>${dep.airlift.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.airlift</groupId>
+                <artifactId>jmx-http</artifactId>
+                <version>${dep.airlift.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${dep.guava.version}</version>
@@ -50,6 +55,11 @@
                 <artifactId>testng</artifactId>
                 <version>${dep.testing.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift.discovery</groupId>
+                <artifactId>discovery-server</artifactId>
+                <version>1.29</version>
             </dependency>
             <!-- byte code generation -->
             <dependency>
@@ -69,7 +79,16 @@
                 <artifactId>presto-client</artifactId>
                 <version>0.205-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift</groupId>
+                <artifactId>log</artifactId>
+            </dependency>
         </dependencies>
+
     </dependencyManagement>
 
     <build>
