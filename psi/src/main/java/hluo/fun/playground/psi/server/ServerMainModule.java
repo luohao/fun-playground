@@ -1,6 +1,8 @@
 package hluo.fun.playground.psi.server;
 
 import com.google.inject.Binder;
+import com.google.inject.Scopes;
+import hluo.fun.playground.psi.test.TestNodeManager;
 import io.airlift.configuration.AbstractConfigurationAwareModule;
 
 import static io.airlift.discovery.client.DiscoveryBinder.discoveryBinder;
@@ -18,9 +20,9 @@ public class ServerMainModule
         }
 
         // node manager
-        discoveryBinder(binder).bindSelector("psi");
+        discoveryBinder(binder).bindSelector("presto");
+        binder.bind(TestNodeManager.class).in(Scopes.SINGLETON);
 
-        discoveryBinder(binder).bindHttpAnnouncement("psi");
-
+        discoveryBinder(binder).bindHttpAnnouncement("presto");
     }
 }

@@ -13,7 +13,7 @@ public class MasterModule
     @Override
     protected void setup(Binder binder)
     {
-        discoveryBinder(binder).bindHttpAnnouncement("psi-group-master");
+        discoveryBinder(binder).bindHttpAnnouncement("presto-coordinator");
 
         // job resource
         jaxrsBinder(binder).bind(JobResource.class);

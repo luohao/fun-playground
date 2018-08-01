@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.airlift.bootstrap.Bootstrap;
+import io.airlift.discovery.client.Announcer;
 import io.airlift.discovery.client.DiscoveryModule;
 import io.airlift.event.client.HttpEventModule;
 import io.airlift.event.client.JsonEventModule;
@@ -37,12 +38,13 @@ public class PsiServer
                 new DiscoveryModule(),
                 new HttpServerModule(),
                 new JsonModule(),
-                new JsonEventModule(),
                 new JaxrsModule(true),
                 new MBeanModule(),
                 new JmxModule(),
                 new JmxHttpModule(),
                 new LogJmxModule(),
+//                new TraceTokenModule(),
+                new JsonEventModule(),
                 new HttpEventModule(),
                 new ServerMainModule());
 
@@ -50,6 +52,8 @@ public class PsiServer
 
         try {
             Injector injector = app.strictConfig().initialize();
+
+            injector.getInstance(Announcer.class).start();
 
             log.info("======== SERVER STARTED ========");
         }

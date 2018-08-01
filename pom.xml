@@ -46,6 +46,16 @@
                 <version>${dep.airlift.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.airlift</groupId>
+                <artifactId>jmx</artifactId>
+                <version>${dep.airlift.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift.discovery</groupId>
+                <artifactId>discovery-server</artifactId>
+                <version>1.29</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${dep.guava.version}</version>
@@ -57,9 +67,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>io.airlift.discovery</groupId>
-                <artifactId>discovery-server</artifactId>
-                <version>1.29</version>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>annotations</artifactId>
+                <version>3.0.0</version>
             </dependency>
             <!-- byte code generation -->
             <dependency>
