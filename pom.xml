@@ -14,7 +14,7 @@
 
     <properties>
         <dep.airlift.version>0.171</dep.airlift.version>
-        <dep.guava.version>21.0</dep.guava.version>
+        <dep.guava.version>24.1-jre</dep.guava.version>
         <dep.testing.version>6.10</dep.testing.version>
     </properties>
 
@@ -51,6 +51,11 @@
                 <version>${dep.airlift.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.airlift</groupId>
+                <artifactId>concurrent</artifactId>
+                <version>${dep.airlift.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.airlift.discovery</groupId>
                 <artifactId>discovery-server</artifactId>
                 <version>1.29</version>
@@ -84,11 +89,6 @@
                 <version>3.11.0</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-client</artifactId>
-                <version>0.205-SNAPSHOT</version>
-            </dependency>
             <dependency>
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>javax.ws.rs-api</artifactId>

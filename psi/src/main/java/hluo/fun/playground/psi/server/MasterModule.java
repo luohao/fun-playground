@@ -1,8 +1,9 @@
 package hluo.fun.playground.psi.server;
 
 import com.google.inject.Binder;
+import hluo.fun.playground.psi.cluster.NodeResource;
 import io.airlift.configuration.AbstractConfigurationAwareModule;
-import io.airlift.discovery.server.EmbeddedDiscoveryModule;
+//import io.airlift.discovery.server.EmbeddedDiscoveryModule;
 
 import static io.airlift.discovery.client.DiscoveryBinder.discoveryBinder;
 import static io.airlift.jaxrs.JaxrsBinder.jaxrsBinder;
@@ -13,12 +14,14 @@ public class MasterModule
     @Override
     protected void setup(Binder binder)
     {
-        discoveryBinder(binder).bindHttpAnnouncement("presto-coordinator");
+        // psi master announcement
+        discoveryBinder(binder).bindHttpAnnouncement("psi-master");
 
         // job resource
         jaxrsBinder(binder).bind(JobResource.class);
+        jaxrsBinder(binder).bind(NodeResource.class);
 
         // discovery service
-        install(new EmbeddedDiscoveryModule());
+        //install(new EmbeddedDiscoveryModule());
     }
 }

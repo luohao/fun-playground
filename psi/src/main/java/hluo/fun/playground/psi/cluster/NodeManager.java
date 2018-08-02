@@ -12,8 +12,11 @@ public interface NodeManager
     // get all nodes in specific state
     Set<Node> getNodes(NodeState state);
 
-    // get current ndoe
+    // get current node
     Node getCurrentNode();
+
+    // get master nodes
+    Set<Node> getMasters();
 
     // refresh nodes
     void refreshNodes();
