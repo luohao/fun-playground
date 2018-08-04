@@ -70,12 +70,13 @@ public class SimpleTaskExecutor
 
     public void assignTask(StreamFunction assignment)
     {
-        task.compareAndSet(null, assignment);
+        checkState(task.compareAndSet(null, assignment), "task already running");
     }
 
     public void removeTask(StreamFunction assignment)
     {
-        task.compareAndSet(assignment, null);
+
+        checkState(task.compareAndSet(assignment, null), "no active task");
     }
 
     private synchronized void addWorkerThread(Runnable worker)

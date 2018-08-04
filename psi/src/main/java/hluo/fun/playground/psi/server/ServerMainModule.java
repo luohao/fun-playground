@@ -6,6 +6,7 @@ import hluo.fun.playground.psi.cluster.DiscoveryNodeManager;
 import hluo.fun.playground.psi.cluster.ForNodeManager;
 import hluo.fun.playground.psi.cluster.NodeManager;
 import hluo.fun.playground.psi.cluster.NodeVersion;
+import hluo.fun.playground.psi.execution.ForTaskClassInfo;
 import io.airlift.configuration.AbstractConfigurationAwareModule;
 import io.airlift.units.Duration;
 
@@ -45,5 +46,7 @@ public class ServerMainModule
                 .addProperty("node_version", nodeVersion.toString())
                 .addProperty("master", String.valueOf(serverConfig.isGroupMaster()));
 
+        // httpClient
+        httpClientBinder(binder).bindHttpClient("taskClassInfo", ForTaskClassInfo.class);
     }
 }
