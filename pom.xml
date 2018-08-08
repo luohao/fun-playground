@@ -9,12 +9,12 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>pica</module>
+        <module>psi</module>
     </modules>
 
     <properties>
-        <dep.airlift.version>0.171</dep.airlift.version>
-        <dep.guava.version>21.0</dep.guava.version>
+        <dep.airlift.version>0.172</dep.airlift.version>
+        <dep.guava.version>24.1-jre</dep.guava.version>
         <dep.testing.version>6.10</dep.testing.version>
     </properties>
 
@@ -32,6 +32,11 @@
             </dependency>
             <dependency>
                 <groupId>io.airlift</groupId>
+                <artifactId>testing</artifactId>
+                <version>${dep.airlift.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift</groupId>
                 <artifactId>bootstrap</artifactId>
                 <version>${dep.airlift.version}</version>
             </dependency>
@@ -39,6 +44,31 @@
                 <groupId>io.airlift</groupId>
                 <artifactId>http-client</artifactId>
                 <version>${dep.airlift.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift</groupId>
+                <artifactId>jmx-http</artifactId>
+                <version>${dep.airlift.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift</groupId>
+                <artifactId>jmx</artifactId>
+                <version>${dep.airlift.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift</groupId>
+                <artifactId>concurrent</artifactId>
+                <version>${dep.airlift.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift</groupId>
+                <artifactId>log</artifactId>
+                <version>${dep.airlift.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift.discovery</groupId>
+                <artifactId>discovery-server</artifactId>
+                <version>1.29</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -50,6 +80,11 @@
                 <artifactId>testng</artifactId>
                 <version>${dep.testing.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>annotations</artifactId>
+                <version>3.0.0</version>
             </dependency>
             <!-- byte code generation -->
             <dependency>
@@ -65,11 +100,11 @@
             </dependency>
 
             <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-client</artifactId>
-                <version>0.205-SNAPSHOT</version>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
             </dependency>
         </dependencies>
+
     </dependencyManagement>
 
     <build>
