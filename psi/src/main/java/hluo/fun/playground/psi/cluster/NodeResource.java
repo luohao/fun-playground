@@ -1,7 +1,5 @@
 package hluo.fun.playground.psi.cluster;
 
-import hluo.fun.playground.psi.server.ServerInfo;
-
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

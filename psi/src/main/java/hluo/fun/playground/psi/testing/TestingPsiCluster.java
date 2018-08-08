@@ -3,7 +3,6 @@ package hluo.fun.playground.psi.testing;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Closer;
-import hluo.fun.playground.psi.cluster.Node;
 import hluo.fun.playground.psi.cluster.PsiCluster;
 import io.airlift.discovery.server.testing.TestingDiscoveryServer;
 import io.airlift.log.Logger;
@@ -148,10 +147,9 @@ public class TestingPsiCluster
         }
 
         public TestingPsiCluster build()
-            throws Exception
+                throws Exception
         {
             return new TestingPsiCluster(nodeCount, extraProperties, masterProperties, environment);
         }
-
     }
 }

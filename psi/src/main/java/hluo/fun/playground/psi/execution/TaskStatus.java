@@ -29,7 +29,7 @@ public class TaskStatus
             @JsonProperty("self") URI self,
             @JsonProperty("nodeId") String nodeId,
             @JsonProperty("state") TaskState state
-            )
+    )
     {
         this.taskInstanceId = requireNonNull(taskInstanceId, "taskInstanceId is null");
         this.version = requireNonNull(version, "version is null");
@@ -37,7 +37,6 @@ public class TaskStatus
         this.nodeId = requireNonNull(nodeId, "nodeId is null");
 
         this.state = requireNonNull(state, "state is null");
-
     }
 
     @JsonProperty
@@ -91,9 +90,8 @@ public class TaskStatus
                 locatoin,
                 nodeId,
                 TaskState.RUNNING
-               );
+        );
     }
-
 
     public static TaskStatus canceledWith(String taskInstanceId, long version, URI locatoin, String nodeId)
     {
@@ -106,7 +104,6 @@ public class TaskStatus
         );
     }
 
-
     public static TaskStatus failedWith(String taskInstanceId, long version, URI locatoin, String nodeId)
     {
         return new TaskStatus(
@@ -117,5 +114,4 @@ public class TaskStatus
                 TaskState.FAILED
         );
     }
-
 }

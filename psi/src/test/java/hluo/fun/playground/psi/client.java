@@ -1,19 +1,14 @@
-package hluo.fun.playground.psi.cluster;
+package hluo.fun.playground.psi;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.net.HttpHeaders;
 import com.google.common.net.MediaType;
 import hluo.fun.playground.psi.execution.JobId;
 import hluo.fun.playground.psi.execution.TaskState;
 import hluo.fun.playground.psi.server.JobInfo;
-import hluo.fun.playground.psi.testing.TestingPsiCluster;
-import hluo.fun.playground.psi.testing.TestingPsiServer;
 import io.airlift.http.client.HttpClient;
 import io.airlift.http.client.JsonResponseHandler;
 import io.airlift.http.client.Request;
 import io.airlift.http.client.jetty.JettyHttpClient;
-import io.airlift.testing.Closeables;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -25,26 +20,21 @@ import static io.airlift.http.client.Request.Builder.prepareDelete;
 import static io.airlift.http.client.Request.Builder.preparePost;
 import static io.airlift.http.client.StaticBodyGenerator.createStaticBodyGenerator;
 import static io.airlift.json.JsonCodec.jsonCodec;
-import static java.lang.Thread.sleep;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.testng.Assert.assertEquals;
 
-public class TestCluster
+public class client
 {
-    private TestingPsiCluster cluster;
     private String testingClassName;
     private String testingSourceCode;
     private HttpClient client;
+
+    private final JsonResponseHandler<JobInfo> responseHandler = createJsonResponseHandler(jsonCodec(JobInfo.class));
 
     @BeforeMethod
     public void setup()
             throws Exception
     {
-        TestingPsiCluster.Builder builder = new TestingPsiCluster.Builder()
-                .setExtraProperties(ImmutableMap.of("task.max-worker-threads", "3"))
-                .setNodeCount(5)
-                .setSingleMasterProperty("http-server.http.port", "9090");
-        cluster = builder.build();
         client = new JettyHttpClient();
 
         // set up the testing stream function
@@ -193,58 +183,34 @@ public class TestCluster
         testingSourceCode = stringBuilder.toString();
     }
 
-    @SuppressWarnings("deprecation")
-    @AfterMethod
-    public void teardown()
+    @Test
+    void submitJob()
+            throws Exception
     {
-        Closeables.closeQuietly(cluster);
+        // submit job
+        Request request = preparePost()
+                .setUri(new URI("http://psi-master--devel--hluo.service.smf1.twitter.biz/v1/job"))
+                .setHeader("X-Psi-Class-Name", testingClassName)
+                .setBodyGenerator(createStaticBodyGenerator(testingSourceCode, UTF_8))
+                .build();
+
+        JobInfo jobInfo = client.execute(request, responseHandler);
     }
 
     @Test
-    void testMaster()
+    void cancelJob()
             throws Exception
     {
-        TestingPsiServer server = new TestingPsiServer();
-    }
+        JobId jobId = JobId.valueOf("1");
+        // delete job
+        Request request = prepareDelete()
+                .setUri(new URI("http://127.0.0.1:9090/v1/job/" + jobId))
+                .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString())
+                .setBodyGenerator(jsonBodyGenerator(jsonCodec(JobId.class), jobId))
+                .build();
 
-    @Test
-    void testCluster()
-            throws Exception
-    {
-        JobId jobId;
-        JsonResponseHandler<JobInfo> responseHandler = createJsonResponseHandler(jsonCodec(JobInfo.class));
-
-        {
-            // submit job
-            Request request = preparePost()
-                    .setUri(new URI("http://127.0.0.1:9090/v1/job"))
-                    .setHeader("X-Psi-Class-Name", testingClassName)
-                    .setBodyGenerator(createStaticBodyGenerator(testingSourceCode, UTF_8))
-                    .build();
-
-            JobInfo jobInfo = client.execute(request, responseHandler);
-            jobId = jobInfo.getJobId();
-            jobInfo.getTaskInfos().stream()
-                    .forEach(x -> assertEquals(x.getTaskStatus().getState(), TaskState.RUNNING));
-        }
-
-        sleep(10000);
-
-        {
-            // delete job
-            Request request = prepareDelete()
-                    .setUri(new URI("http://127.0.0.1:9090/v1/job/" + jobId))
-                    .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString())
-                    .setBodyGenerator(jsonBodyGenerator(jsonCodec(JobId.class), jobId))
-                    .build();
-
-            JobInfo jobInfo = client.execute(request, responseHandler);
-            jobInfo.getTaskInfos().stream()
-                    .forEach(x -> assertEquals(x.getTaskStatus().getState(), TaskState.CANCELED));
-        }
-
-        // wait for some time before we destroy the cluster
-        // FIXME: fix the wait time by implementing graceful shutdown...
-        sleep(5000);
+        JobInfo jobInfo = client.execute(request, responseHandler);
+        jobInfo.getTaskInfos().stream()
+                .forEach(x -> assertEquals(x.getTaskStatus().getState(), TaskState.CANCELED));
     }
 }

@@ -2,10 +2,8 @@ package hluo.fun.playground.psi.server;
 
 import com.google.inject.Binder;
 import com.google.inject.Scopes;
-import hluo.fun.playground.psi.cluster.NodeResource;
 import io.airlift.configuration.AbstractConfigurationAwareModule;
 import io.airlift.discovery.server.EmbeddedDiscoveryModule;
-//import io.airlift.discovery.server.EmbeddedDiscoveryModule;
 
 import static io.airlift.configuration.ConditionalModule.installModuleIf;
 import static io.airlift.discovery.client.DiscoveryBinder.discoveryBinder;

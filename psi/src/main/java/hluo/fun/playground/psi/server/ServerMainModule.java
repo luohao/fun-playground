@@ -16,10 +16,8 @@ import hluo.fun.playground.psi.execution.TaskInfo;
 import hluo.fun.playground.psi.execution.TaskManager;
 import hluo.fun.playground.psi.execution.TaskResource;
 import io.airlift.configuration.AbstractConfigurationAwareModule;
-import io.airlift.discovery.server.EmbeddedDiscoveryModule;
 import io.airlift.units.Duration;
 
-import static io.airlift.configuration.ConditionalModule.installModuleIf;
 import static io.airlift.discovery.client.DiscoveryBinder.discoveryBinder;
 import static io.airlift.http.client.HttpClientBinder.httpClientBinder;
 import static io.airlift.jaxrs.JaxrsBinder.jaxrsBinder;

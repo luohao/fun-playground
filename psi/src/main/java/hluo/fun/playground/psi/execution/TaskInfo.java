@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.annotation.concurrent.Immutable;
 
 import java.net.URI;
-import java.util.List;
 
 import static com.google.common.base.MoreObjects.toStringHelper;
 
@@ -52,6 +51,6 @@ public class TaskInfo
         return new TaskInfo(
                 taskId,
                 TaskStatus.createInitialTaskStatus(String.valueOf(taskId.getId()), location, nodeId)
-                );
+        );
     }
 }

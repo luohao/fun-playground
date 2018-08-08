@@ -12,7 +12,6 @@ import hluo.fun.playground.psi.execution.JobId;
 import hluo.fun.playground.psi.execution.TaskId;
 import hluo.fun.playground.psi.execution.TaskInfo;
 import hluo.fun.playground.psi.execution.TaskState;
-import io.airlift.http.client.FullJsonResponseHandler;
 import io.airlift.http.client.HttpClient;
 import io.airlift.http.client.JsonResponseHandler;
 import io.airlift.http.client.Request;
@@ -26,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.ImmutableList.toImmutableList;
-import static io.airlift.http.client.FullJsonResponseHandler.createFullJsonResponseHandler;
 import static io.airlift.http.client.HttpUriBuilder.uriBuilderFrom;
 import static io.airlift.http.client.JsonBodyGenerator.jsonBodyGenerator;
 import static io.airlift.http.client.JsonResponseHandler.createJsonResponseHandler;
@@ -122,6 +120,10 @@ public class JobManager
                     return taskInfo;
                 })
                 .collect(toImmutableList());
+        // remove job from job info map
+        // FIXME: race condition?
+        jobInfoMap.remove(jobId);
+        classInfoMap.remove(jobId);
         return new JobInfo(jobId, taskInfos);
     }
 

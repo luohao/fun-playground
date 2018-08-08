@@ -61,7 +61,7 @@ public class JobResource
     @Produces(MediaType.APPLICATION_JSON)
     public Response submitFunction(String sourceCode, @Context HttpServletRequest servletRequest)
     {
-        String className = servletRequest.getHeader("X-Pica-Class-Name");
+        String className = servletRequest.getHeader("X-Psi-Class-Name");
 
         // compile source code
         JobInfo jobInfo = jobManager.addJob(className, sourceCode);
