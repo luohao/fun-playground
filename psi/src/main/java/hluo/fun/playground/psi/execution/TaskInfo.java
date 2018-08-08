@@ -1,5 +1,6 @@
 package hluo.fun.playground.psi.execution;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.concurrent.Immutable;
@@ -16,6 +17,7 @@ public class TaskInfo
     private final TaskStatus taskStatus;
     // TODO: more stats here
 
+    @JsonCreator
     public TaskInfo(
             @JsonProperty("taskId") TaskId taskId,
             @JsonProperty("taskStatus") TaskStatus taskStatus)
@@ -45,11 +47,11 @@ public class TaskInfo
                 .toString();
     }
 
-    public static TaskInfo createInitialTask(TaskId taskId, String nodeId)
+    public static TaskInfo createInitialTask(TaskId taskId, URI location, String nodeId)
     {
         return new TaskInfo(
                 taskId,
-                TaskStatus.createInitialTaskStatus(String.valueOf(taskId.getId()), nodeId)
+                TaskStatus.createInitialTaskStatus(String.valueOf(taskId.getId()), location, nodeId)
                 );
     }
 }

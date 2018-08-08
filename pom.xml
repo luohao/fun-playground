@@ -13,7 +13,7 @@
     </modules>
 
     <properties>
-        <dep.airlift.version>0.171</dep.airlift.version>
+        <dep.airlift.version>0.172</dep.airlift.version>
         <dep.guava.version>24.1-jre</dep.guava.version>
         <dep.testing.version>6.10</dep.testing.version>
     </properties>
@@ -28,6 +28,11 @@
             <dependency>
                 <groupId>io.airlift</groupId>
                 <artifactId>jaxrs</artifactId>
+                <version>${dep.airlift.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift</groupId>
+                <artifactId>testing</artifactId>
                 <version>${dep.airlift.version}</version>
             </dependency>
             <dependency>
@@ -53,6 +58,11 @@
             <dependency>
                 <groupId>io.airlift</groupId>
                 <artifactId>concurrent</artifactId>
+                <version>${dep.airlift.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift</groupId>
+                <artifactId>log</artifactId>
                 <version>${dep.airlift.version}</version>
             </dependency>
             <dependency>
@@ -92,10 +102,6 @@
             <dependency>
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>javax.ws.rs-api</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>io.airlift</groupId>
-                <artifactId>log</artifactId>
             </dependency>
         </dependencies>
 

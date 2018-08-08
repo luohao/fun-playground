@@ -158,7 +158,6 @@ public final class DiscoveryNodeManager
                             mastersBuilder.add(node);
                         }
 
-                        // always add system connector
                         break;
                     case INACTIVE:
                         inactiveNodesBuilder.add(node);
@@ -267,6 +266,6 @@ public final class DiscoveryNodeManager
 
     private static boolean isMaster(ServiceDescriptor service)
     {
-        return Boolean.parseBoolean(service.getProperties().get("psi-master"));
+        return Boolean.parseBoolean(service.getProperties().get("master"));
     }
 }

@@ -1,5 +1,8 @@
 package hluo.fun.playground.psi.execution;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.inject.Inject;
+import hluo.fun.playground.psi.server.ServerConfig;
 import io.airlift.concurrent.SetThreadName;
 
 import javax.annotation.PostConstruct;
@@ -33,6 +36,12 @@ public class SimpleTaskExecutor
     private final AtomicReference<StreamFunction> task = new AtomicReference<>(null);   // initialized with null
     private final AtomicBoolean closed = new AtomicBoolean(false);// initialized with false
 
+    @Inject
+    public SimpleTaskExecutor(ServerConfig config) {
+        this(config.getMaxWorkerThreads());
+    }
+
+    @VisibleForTesting
     public SimpleTaskExecutor(int runnerThreads)
     {
         checkArgument(runnerThreads > 2, "runnerThreads must be at least 3");

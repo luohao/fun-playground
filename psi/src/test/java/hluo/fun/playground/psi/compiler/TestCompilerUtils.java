@@ -1,45 +1,19 @@
-package hluo.fun.playground.psi.cluster;
+package hluo.fun.playground.psi.compiler;
 
-import com.google.common.collect.ImmutableMap;
-import hluo.fun.playground.psi.execution.TaskState;
-import hluo.fun.playground.psi.server.JobInfo;
-import hluo.fun.playground.psi.testing.TestingPsiCluster;
-import hluo.fun.playground.psi.testing.TestingPsiServer;
-import io.airlift.http.client.HttpClient;
-import io.airlift.http.client.JsonResponseHandler;
-import io.airlift.http.client.Request;
-import io.airlift.http.client.jetty.JettyHttpClient;
-import io.airlift.testing.Closeables;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.net.URI;
-
-import static io.airlift.http.client.JsonResponseHandler.createJsonResponseHandler;
-import static io.airlift.http.client.Request.Builder.preparePost;
-import static io.airlift.http.client.StaticBodyGenerator.createStaticBodyGenerator;
-import static io.airlift.json.JsonCodec.jsonCodec;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.testng.Assert.assertEquals;
-
-public class TestCluster
+public class TestCompilerUtils
 {
-    private TestingPsiCluster cluster;
+    private CompilerUtils compilerUtils;
     private String testingClassName;
     private String testingSourceCode;
-    private HttpClient client;
 
     @BeforeMethod
     public void setup()
             throws Exception
     {
-        TestingPsiCluster.Builder builder = new TestingPsiCluster.Builder()
-                .setExtraProperties(ImmutableMap.of("task.max-worker-threads", "3"))
-                .setSingleMasterProperty("http-server.http.port", "9090");
-        cluster = builder.build();
-        client = new JettyHttpClient();
-
+        compilerUtils = new CompilerUtils();
         // set up the testing stream function
         testingClassName = "hluo.fun.playground.psi.example.WordCountStreamFunction";
         StringBuilder stringBuilder = new StringBuilder()
@@ -186,43 +160,11 @@ public class TestCluster
         testingSourceCode = stringBuilder.toString();
     }
 
-    @SuppressWarnings("deprecation")
-    @AfterMethod
-    public void teardown()
-    {
-        Closeables.closeQuietly(cluster);
-    }
-
     @Test
-    void testMaster()
+    void testCompileSingleSourceFromString()
             throws Exception
     {
-        TestingPsiServer server = new TestingPsiServer();
-    }
-
-    @Test
-    void testCluster()
-            throws Exception
-    {
-//        System.out.println("Sleep for 5s");
-//        sleep(5000);
-
-        System.out.println("Submit stream function to master!");
-//        while (true) {}
-
-        {
-            Request request = preparePost()
-                    .setUri(new URI("http://127.0.0.1:9090/v1/job"))
-                    .setHeader("X-Pica-Class-Name", testingClassName)
-                    .setBodyGenerator(createStaticBodyGenerator(testingSourceCode, UTF_8))
-                    .build();
-
-            JsonResponseHandler<JobInfo> responseHandler = createJsonResponseHandler(jsonCodec(JobInfo.class));
-            JobInfo jobInfo = client.execute(request, responseHandler);
-
-            jobInfo.getTaskInfos().stream()
-                    .forEach(x -> assertEquals(x.getTaskStatus().getState(), TaskState.RUNNING));
-        }
-        while (true) {}
+        ClassInfo classInfo = compilerUtils.compileSingleSource(testingClassName, testingSourceCode);
+        compilerUtils.loadClass(classInfo).newInstance();
     }
 }

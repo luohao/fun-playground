@@ -3,5 +3,6 @@ package hluo.fun.playground.psi.server;
 public enum NodeState
 {
     ACTIVE,
-    INACTIVE
+    INACTIVE,
+    SHUTTING_DOWN
 }

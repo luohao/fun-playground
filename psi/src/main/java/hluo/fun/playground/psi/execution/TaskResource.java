@@ -33,6 +33,7 @@ public class TaskResource
     @Produces(MediaType.APPLICATION_JSON)
     public Response createOrUpdateTask(@PathParam("taskId") TaskId taskId, TaskUpdateRequest taskUpdateRequest)
     {
+        // FIXME: use async response
         requireNonNull(taskUpdateRequest, "taskUpdateRequest is null");
         TaskInfo taskInfo = taskManager.updateTask(taskId, taskUpdateRequest);
         return Response.ok().entity(taskInfo).build();
@@ -42,19 +43,20 @@ public class TaskResource
     @GET
     @Path("{taskId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public void getTaskInfo(@PathParam("taskId") final TaskId taskId)
+    public Response getTaskInfo(@PathParam("taskId") final TaskId taskId)
     {
         TaskInfo taskInfo = taskManager.getRunningTask();
+        return Response.ok().entity(taskInfo).build();
     }
 
     @DELETE
     @Path("{taskId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public TaskInfo deleteTask(
+    public Response deleteTask(
             @PathParam("taskId") TaskId taskId)
     {
         requireNonNull(taskId, "taskId is null");
         TaskInfo taskInfo = taskManager.cancelTask(taskId);
-        return taskInfo;
+        return Response.ok(taskInfo).build();
     }
 }

@@ -1,6 +1,7 @@
 package hluo.fun.playground.psi.server;
 
 import com.google.inject.Binder;
+import com.google.inject.Scopes;
 import hluo.fun.playground.psi.cluster.NodeResource;
 import io.airlift.configuration.AbstractConfigurationAwareModule;
 //import io.airlift.discovery.server.EmbeddedDiscoveryModule;
@@ -19,7 +20,9 @@ public class MasterModule
 
         // job resource
         jaxrsBinder(binder).bind(JobResource.class);
-        jaxrsBinder(binder).bind(NodeResource.class);
+
+        // job manager
+        binder.bind(JobManager.class).in(Scopes.SINGLETON);
 
         // discovery service
         //install(new EmbeddedDiscoveryModule());

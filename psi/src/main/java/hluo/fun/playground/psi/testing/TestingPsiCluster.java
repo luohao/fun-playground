@@ -3,6 +3,7 @@ package hluo.fun.playground.psi.testing;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Closer;
+import hluo.fun.playground.psi.cluster.Node;
 import hluo.fun.playground.psi.cluster.PsiCluster;
 import io.airlift.discovery.server.testing.TestingDiscoveryServer;
 import io.airlift.log.Logger;
@@ -112,7 +113,7 @@ public class TestingPsiCluster
 
     public static class Builder
     {
-        private int nodeCount = 4;
+        private int nodeCount = 2;
         private Map<String, String> extraProperties = ImmutableMap.of();
         private Map<String, String> masterProperties = ImmutableMap.of();
         private String environment = ENVIRONMENT;

@@ -8,6 +8,7 @@ import com.google.inject.Key;
 import com.google.inject.Module;
 import hluo.fun.playground.psi.cluster.AllNodes;
 import hluo.fun.playground.psi.cluster.NodeManager;
+import hluo.fun.playground.psi.execution.TaskManager;
 import hluo.fun.playground.psi.server.ServerMainModule;
 import io.airlift.bootstrap.Bootstrap;
 import io.airlift.bootstrap.LifeCycleManager;
@@ -52,6 +53,7 @@ public class TestingPsiServer
     private final LifeCycleManager lifeCycleManager;
     private final TestingHttpServer server;
     private final NodeManager nodeManager;
+    private final TaskManager taskManager;
     private final ServiceSelectorManager serviceSelectorManager;
     private final Announcer announcer;
     private final boolean master;
@@ -131,6 +133,7 @@ public class TestingPsiServer
         lifeCycleManager = injector.getInstance(LifeCycleManager.class);
         server = injector.getInstance(TestingHttpServer.class);
         nodeManager = injector.getInstance(NodeManager.class);
+        taskManager = injector.getInstance(TaskManager.class);
         serviceSelectorManager = injector.getInstance(ServiceSelectorManager.class);
         announcer = injector.getInstance(Announcer.class);
         announcer.forceAnnounce();

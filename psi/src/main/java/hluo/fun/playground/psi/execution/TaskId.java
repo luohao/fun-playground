@@ -27,7 +27,7 @@ public class TaskId
         this.fullId = fullId;
     }
 
-    public TaskId(String jobId, int id)
+    public TaskId(JobId jobId, int id)
     {
         checkArgument(id >= 0, "instance id is negative");
         this.fullId = jobId + "." + id;

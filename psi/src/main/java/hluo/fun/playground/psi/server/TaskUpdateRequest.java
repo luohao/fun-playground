@@ -23,7 +23,7 @@ public class TaskUpdateRequest
     }
 
     @JsonProperty
-    URI getMaster()
+    public URI getMaster()
     {
         return master;
     }
