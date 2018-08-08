@@ -1,0 +1,131 @@
+import os
+
+class Profile(Struct):
+  name                = Required(String)
+  role                = Default(String, os.environ['USER'])
+  contact             = Default(String, '{}@twitter.com'.format(os.environ['USER']))
+  environment         = Required(String)
+  pkg_version         = Default(String, 'latest')
+
+# copy hello_world.py locally
+install_package = Packer.install('psi-server', version='{{profile.pkg_version}}')
+
+start_master = Process(
+    name = 'start_master' ,
+    cmdline = '''
+    #!/bin/bash
+
+    # setup config/log files
+    mkdir -p etc && touch "etc/config.properties" && touch "etc/log.properties";
+
+    # install server config
+
+    echo "master=true
+    node.environment=test
+    http-server.http.port={{thermos.ports[http]}}
+    discovery-server.enabled=true
+    discovery.uri=http://psi-master--devel--hluo.service.smf1.twitter.biz:80
+    task.max-worker-threads=6
+    psi.version=testversion
+    " >> etc/config.properties
+
+    # install log config
+        echo "hluo.fun.playground.psi=INFO
+    com.sun.jersey.guice.spi.container.GuiceComponentProviderFactory=WARN
+    com.ning.http.client=WARN
+    " > "etc/log.properties"
+
+    # start server
+    export JAVA_HOME=/usr/lib/jvm/java-1.8.0-twitter/;
+    export PATH=$JAVA_HOME/bin:$PATH;
+    # fetch uber jar
+    java -cp psi-1.0-SNAPSHOT-jar-with-dependencies.jar -XX:+UseG1GC -XX:G1HeapRegionSize=32M -XX:+UseGCOverheadLimit  -XX:+ExplicitGCInvokesConcurrent -Xmx2G \
+    -Dconfig=etc/config.properties -Dlog.levels-file=etc/log.properties -Dlog.output-file=var/log/server.log hluo.fun.playground.psi.server.PsiServer
+    '''
+)
+
+
+start_worker = Process(
+    name = 'start_worker' ,
+    cmdline = '''
+    #!/bin/bash
+
+    # setup config/log files
+    mkdir -p etc && touch "etc/config.properties" && touch "etc/log.properties";
+
+    # install server config
+    echo "master=false
+    node.environment=test
+    http-server.http.port={{thermos.ports[http]}}
+    discovery.uri=http://psi-master--devel--hluo.service.smf1.twitter.biz:80
+    task.max-worker-threads=6
+    psi.version=testversion
+    " >> "etc/config.properties"
+
+    # install log config
+        echo "hluo.fun.playground.psi=INFO
+    com.sun.jersey.guice.spi.container.GuiceComponentProviderFactory=WARN
+    com.ning.http.client=WARN
+    " > "etc/log.properties"
+
+    # start server
+    export JAVA_HOME=/usr/lib/jvm/java-1.8.0-twitter/;
+    export PATH=$JAVA_HOME/bin:$PATH;
+    # fetch uber jar
+    java -cp psi-1.0-SNAPSHOT-jar-with-dependencies.jar -XX:+UseG1GC -XX:G1HeapRegionSize=32M -XX:+UseGCOverheadLimit  -XX:+ExplicitGCInvokesConcurrent -Xmx2G \
+    -Dconfig=etc/config.properties -Dlog.levels-file=etc/log.properties -Dlog.output-file=var/log/server.log hluo.fun.playground.psi.server.PsiServer
+    '''
+)
+
+# describe the task
+psi_master = SequentialTask(
+  processes = [install_package, start_master],
+  resources = Resources(cpu = 4, ram = 4*GB, disk=1024*MB)
+)
+
+psi_worker = SequentialTask(
+  processes = [install_package, start_worker],
+  resources = Resources(cpu = 4, ram = 4*GB, disk=1024*MB)
+)
+
+# describe the service
+psi_master_service = Service(
+  contact='{{profile.contact}}',
+  cluster='{{cluster}}',
+  environment='{{profile.environment}}',
+  role='{{profile.role}}',
+  name='{{profile.name}}',
+  task=psi_master,
+  update_config=UpdateConfig(),
+  announce=Announcer()
+)
+
+psi_worker_service = Service(
+  contact='{{profile.contact}}',
+  cluster='{{cluster}}',
+  environment='{{profile.environment}}',
+  role='{{profile.role}}',
+  name='{{profile.name}}',
+  task=psi_worker,
+  update_config=UpdateConfig(),
+  announce=Announcer()
+)
+
+# you may eventually have a staging & prod profile as well
+Master = Profile(
+  name = 'psi-master',
+  environment = 'devel',
+  pkg_version = 'latest'
+)
+
+Worker = Profile(
+  name = 'psi-worker',
+  environment = 'devel',
+  pkg_version = 'latest'
+)
+
+
+jobs = [
+  psi_master_service(cluster='smf1', instances=1).bind(profile=Master),
+  psi_worker_service(cluster='smf1', instances=4).bind(profile=Worker),
+]
