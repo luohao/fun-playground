@@ -16,6 +16,7 @@
         <dep.airlift.version>0.172</dep.airlift.version>
         <dep.guava.version>24.1-jre</dep.guava.version>
         <dep.testing.version>6.10</dep.testing.version>
+        <dep.ws.version>2.1</dep.ws.version>
     </properties>
 
     <dependencyManagement>
@@ -86,25 +87,12 @@
                 <artifactId>annotations</artifactId>
                 <version>3.0.0</version>
             </dependency>
-            <!-- byte code generation -->
-            <dependency>
-                <groupId>pl.joegreen</groupId>
-                <artifactId>lambda-from-string</artifactId>
-                <version>1.6</version>
-            </dependency>
-            <!-- HTTP Client -->
-            <dependency>
-                <groupId>com.squareup.okhttp3</groupId>
-                <artifactId>okhttp</artifactId>
-                <version>3.11.0</version>
-            </dependency>
-
             <dependency>
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>javax.ws.rs-api</artifactId>
+                <version>${dep.ws.version}</version>
             </dependency>
         </dependencies>
-
     </dependencyManagement>
 
     <build>
@@ -117,6 +105,28 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.twitter.Demo</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

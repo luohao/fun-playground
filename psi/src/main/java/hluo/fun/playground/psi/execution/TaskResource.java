@@ -45,7 +45,10 @@ public class TaskResource
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllTasks()
     {
-        return Response.ok().entity(ImmutableList.of(taskManager.getRunningTask())).build();
+        if (taskManager.getRunningTask() != null) {
+            return Response.ok().entity(ImmutableList.of(taskManager.getRunningTask())).build();
+        }
+        return Response.ok().entity(ImmutableList.of()).build();
     }
 
     // get the info of the task for the taskId

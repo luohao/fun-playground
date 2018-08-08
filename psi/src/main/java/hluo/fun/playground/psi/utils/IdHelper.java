@@ -1,4 +1,4 @@
-package hluo.fun.playground.psi.Utils;
+package hluo.fun.playground.psi.utils;
 
 import java.util.Arrays;
 import java.util.List;

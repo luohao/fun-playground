@@ -16,6 +16,7 @@ import io.airlift.json.JsonModule;
 import io.airlift.log.LogJmxModule;
 import io.airlift.log.Logger;
 import io.airlift.node.NodeModule;
+import io.airlift.tracetoken.TraceTokenModule;
 import org.weakref.jmx.guice.MBeanModule;
 
 public class PsiServer
@@ -41,9 +42,9 @@ public class PsiServer
                 new JaxrsModule(true),
                 new MBeanModule(),
                 new JmxModule(),
+                new TraceTokenModule(),
                 new JmxHttpModule(),
                 new LogJmxModule(),
-//                new TraceTokenModule(),
                 new JsonEventModule(),
                 new HttpEventModule(),
                 new ServerMainModule());
