@@ -6,6 +6,7 @@ import hluo.fun.playground.psi.execution.JobId;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -53,7 +54,7 @@ public class JobResource
     public Response getJobClassInfo(@PathParam("jobId") JobId jobId)
     {
         ClassInfo classInfo = jobManager.getJobClassInfo(jobId);
-        return Response.ok(classInfo).build();
+        return Response.ok().entity(classInfo).build();
     }
 
     @POST
@@ -66,5 +67,15 @@ public class JobResource
         JobInfo jobInfo = jobManager.addJob(className, sourceCode);
 
         return Response.ok(jobInfo).build();
+    }
+
+    @DELETE
+    @Path("{jobId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteTask(
+            @PathParam("jobId") JobId jobId)
+    {
+        JobInfo jobInfo = jobManager.removeJob(jobId);
+        return Response.ok().entity(jobInfo).build();
     }
 }

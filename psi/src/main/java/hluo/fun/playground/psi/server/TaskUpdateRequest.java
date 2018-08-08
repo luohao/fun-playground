@@ -16,7 +16,7 @@ public class TaskUpdateRequest
     private final String nodeId;
 
     @JsonCreator
-    TaskUpdateRequest(@JsonProperty("master") URI master, @JsonProperty("nodeId") String nodeId)
+    public TaskUpdateRequest(@JsonProperty("master") URI master, @JsonProperty("nodeId") String nodeId)
     {
         this.master = requireNonNull(master, "master is null");
         this.nodeId = requireNonNull(nodeId, "nodeId is null");

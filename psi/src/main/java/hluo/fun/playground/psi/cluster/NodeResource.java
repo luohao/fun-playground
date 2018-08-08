@@ -29,11 +29,14 @@ public class NodeResource
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllNodes()
     {
-        System.out.println("======== Get All Nodes ========");
-        List<URI> nodes = nodeManager.getAllNodes().getActiveNodes().stream()
+        List<URI> masters = nodeManager.getMasters().stream()
+                .map(x -> x.getHttpUri())
+                .collect(toImmutableList());
+        List<URI> workers = nodeManager.getAllNodes().getActiveNodes().stream()
+                .filter(x -> !nodeManager.getMasters().contains(x))
                 .map(x -> x.getHttpUri())
                 .collect(toImmutableList());
 
-        return Response.ok(nodes).build();
+        return Response.ok().entity(new ClusterInfo(masters, workers)).build();
     }
 }

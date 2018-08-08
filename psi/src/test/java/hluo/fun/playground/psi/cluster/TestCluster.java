@@ -1,8 +1,13 @@
 package hluo.fun.playground.psi.cluster;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.net.HttpHeaders;
+import com.google.common.net.MediaType;
+import hluo.fun.playground.psi.execution.JobId;
 import hluo.fun.playground.psi.execution.TaskState;
 import hluo.fun.playground.psi.server.JobInfo;
+import hluo.fun.playground.psi.server.NodeState;
+import hluo.fun.playground.psi.server.TaskUpdateRequest;
 import hluo.fun.playground.psi.testing.TestingPsiCluster;
 import hluo.fun.playground.psi.testing.TestingPsiServer;
 import io.airlift.http.client.HttpClient;
@@ -16,10 +21,13 @@ import org.testng.annotations.Test;
 
 import java.net.URI;
 
+import static io.airlift.http.client.JsonBodyGenerator.jsonBodyGenerator;
 import static io.airlift.http.client.JsonResponseHandler.createJsonResponseHandler;
+import static io.airlift.http.client.Request.Builder.prepareDelete;
 import static io.airlift.http.client.Request.Builder.preparePost;
 import static io.airlift.http.client.StaticBodyGenerator.createStaticBodyGenerator;
 import static io.airlift.json.JsonCodec.jsonCodec;
+import static java.lang.Thread.sleep;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.testng.Assert.assertEquals;
 
@@ -36,6 +44,7 @@ public class TestCluster
     {
         TestingPsiCluster.Builder builder = new TestingPsiCluster.Builder()
                 .setExtraProperties(ImmutableMap.of("task.max-worker-threads", "3"))
+                .setNodeCount(5)
                 .setSingleMasterProperty("http-server.http.port", "9090");
         cluster = builder.build();
         client = new JettyHttpClient();
@@ -204,25 +213,40 @@ public class TestCluster
     void testCluster()
             throws Exception
     {
-//        System.out.println("Sleep for 5s");
-//        sleep(5000);
-
-        System.out.println("Submit stream function to master!");
-//        while (true) {}
+        JobId jobId;
+        JsonResponseHandler<JobInfo> responseHandler = createJsonResponseHandler(jsonCodec(JobInfo.class));
 
         {
+            // submit job
             Request request = preparePost()
                     .setUri(new URI("http://127.0.0.1:9090/v1/job"))
                     .setHeader("X-Pica-Class-Name", testingClassName)
                     .setBodyGenerator(createStaticBodyGenerator(testingSourceCode, UTF_8))
                     .build();
 
-            JsonResponseHandler<JobInfo> responseHandler = createJsonResponseHandler(jsonCodec(JobInfo.class));
             JobInfo jobInfo = client.execute(request, responseHandler);
-
+            jobId = jobInfo.getJobId();
             jobInfo.getTaskInfos().stream()
                     .forEach(x -> assertEquals(x.getTaskStatus().getState(), TaskState.RUNNING));
         }
-        while (true) {}
+
+        sleep(10000);
+
+        {
+            // delete job
+            Request request = prepareDelete()
+                    .setUri(new URI("http://127.0.0.1:9090/v1/job/" + jobId))
+                    .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString())
+                    .setBodyGenerator(jsonBodyGenerator(jsonCodec(JobId.class), jobId))
+                    .build();
+
+            JobInfo jobInfo = client.execute(request, responseHandler);
+            jobInfo.getTaskInfos().stream()
+                    .forEach(x -> assertEquals(x.getTaskStatus().getState(), TaskState.CANCELED));
+        }
+
+        // wait for some time before we destroy the cluster
+        // FIXME: fix the wait time by implementing graceful shutdown...
+        sleep(5000);
     }
 }

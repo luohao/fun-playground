@@ -59,6 +59,7 @@ public class TaskManager
             this.streamFunction = fetchStreamFunction(jobId, request);
         }
         catch (Exception e) {
+            e.printStackTrace();
             // FIXME: handle exceptions correctly
             return new TaskInfo(taskId,
                     TaskStatus.failedWith(String.valueOf(taskId.getId()),
@@ -67,6 +68,7 @@ public class TaskManager
                             request.getNodeId()));
         }
         taskExecutor.assignTask(streamFunction);
+        this.runningTask = taskInfo;
         return taskInfo;
     }
 
@@ -96,7 +98,7 @@ public class TaskManager
     {
         // fetch the stream function object from master
         Request request = prepareGet()
-                .setUri(uriBuilderFrom(taskUpdateRequest.getMaster()).replacePath("/v1/job/" + jobId).build())
+                .setUri(uriBuilderFrom(taskUpdateRequest.getMaster()).replacePath("/v1/job/class/" + jobId).build())
                 .build();
 
         JsonResponseHandler<ClassInfo> responseHandler = createJsonResponseHandler(jsonCodec(ClassInfo.class));

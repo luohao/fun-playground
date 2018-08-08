@@ -100,7 +100,7 @@ public final class DiscoveryNodeManager
                 // Add new nodes
                 for (Node node : aliveNodes) {
                     nodeStates.putIfAbsent(node.getNodeIdentifier(),
-                            new RemoteNodeState(httpClient, uriBuilderFrom(node.getHttpUri()).appendPath("/v1/info/state").build()));
+                            new RemoteNodeState(httpClient, uriBuilderFrom(node.getHttpUri()).replacePath("/v1/info/state").build()));
                 }
 
                 // Schedule refresh

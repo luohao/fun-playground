@@ -84,12 +84,13 @@ public class TaskStatus
 
     public static TaskStatus createInitialTaskStatus(String taskInstanceId, URI locatoin, String nodeId)
     {
+        // FIXME: when switched to async start of the task, the initial state should be STARTED
         return new TaskStatus(
                 taskInstanceId,
                 STARTING_VERSION,
                 locatoin,
                 nodeId,
-                TaskState.STARTED
+                TaskState.RUNNING
                );
     }
 

@@ -1,5 +1,6 @@
 package hluo.fun.playground.psi.execution;
 
+import com.google.common.collect.ImmutableList;
 import hluo.fun.playground.psi.server.TaskUpdateRequest;
 
 import javax.inject.Inject;
@@ -37,6 +38,14 @@ public class TaskResource
         requireNonNull(taskUpdateRequest, "taskUpdateRequest is null");
         TaskInfo taskInfo = taskManager.updateTask(taskId, taskUpdateRequest);
         return Response.ok().entity(taskInfo).build();
+    }
+
+    // get the info of the task for the taskId
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllTasks()
+    {
+        return Response.ok().entity(ImmutableList.of(taskManager.getRunningTask())).build();
     }
 
     // get the info of the task for the taskId

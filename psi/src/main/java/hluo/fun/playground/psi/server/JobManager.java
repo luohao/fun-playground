@@ -84,15 +84,16 @@ public class JobManager
                     TaskUpdateRequest taskUpdateRequest = new TaskUpdateRequest(masterNode.getHttpUri(), masterNode.getNodeIdentifier());
 
                     Request request = preparePost()
-                            .setUri(uriBuilderFrom(x.getHttpUri()).appendPath("/v1/task/" + taskId).build())
+                            .setUri(uriBuilderFrom(x.getHttpUri()).replacePath("/v1/task/" + taskId).build())
                             .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString())
                             .setBodyGenerator(jsonBodyGenerator(updateRequestCodec, taskUpdateRequest))
                             .build();
-                    System.out.println(request.toString());
                     JsonResponseHandler<TaskInfo> responseHandler = createJsonResponseHandler(taskInfoCodec);
                     // FIXME: use async response and check for task status
-                    TaskInfo taskInfo = httpClient.execute(request, responseHandler);
+                    // FIXME: a better error handling...
 
+                    TaskInfo taskInfo = httpClient.execute(request, responseHandler);
+                    checkState(taskInfo.getTaskStatus().getState() == TaskState.RUNNING, "Task " + taskInfo.getTaskId() + " is not running");
                     return taskInfo;
                 }).collect(toImmutableList());
         JobInfo jobInfo = new JobInfo(jobId, taskInfos);
@@ -105,20 +106,23 @@ public class JobManager
         JobInfo jobInfo = jobInfoMap.get(jobId);
 
         // remove all tasks from workers
-        jobInfo.getTaskInfos().stream()
-                .forEach(x -> {
+        List<TaskInfo> taskInfos = jobInfo.getTaskInfos().stream()
+                .map(x -> {
                     // cancel the task in the worker
                     Request request = prepareDelete()
-                            .setUri(uriBuilderFrom(x.getTaskStatus().getSelf()).appendPath("/v1/task/" + x).build())
+                            .setUri(uriBuilderFrom(x.getTaskStatus().getSelf()).replacePath("/v1/task/" + x.getTaskId()).build())
                             .build();
                     JsonResponseHandler<TaskInfo> responseHandler = createJsonResponseHandler(taskInfoCodec);
                     TaskInfo taskInfo = httpClient.execute(request, responseHandler);
 
-                    // FIXME: a better error handling...
                     // check the status of the task
-                    checkState(taskInfo.getTaskStatus().getState() == TaskState.RUNNING, "Task " + taskInfo.getTaskId() + " is not running");
-                });
-        return jobInfo;
+                    // FIXME: a better error handling...
+                    checkState(taskInfo.getTaskStatus().getState().isDone(), "Failed to cancel task " + taskInfo.getTaskId());
+
+                    return taskInfo;
+                })
+                .collect(toImmutableList());
+        return new JobInfo(jobId, taskInfos);
     }
 
     public List<JobInfo> getAllJobs()
