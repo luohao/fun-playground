@@ -1,4 +1,4 @@
-package hluo.fun.playground.psi;
+package hluo.fun.playground.psi.cluster;
 
 import com.google.common.net.HttpHeaders;
 import com.google.common.net.MediaType;
@@ -23,7 +23,7 @@ import static io.airlift.json.JsonCodec.jsonCodec;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.testng.Assert.assertEquals;
 
-public class client
+public class TestJobRequest
 {
     private String testingClassName;
     private String testingSourceCode;
@@ -33,7 +33,6 @@ public class client
 
     @BeforeMethod
     public void setup()
-            throws Exception
     {
         client = new JettyHttpClient();
 
@@ -195,6 +194,7 @@ public class client
                 .build();
 
         JobInfo jobInfo = client.execute(request, responseHandler);
+        System.out.println(jobInfo);
     }
 
     @Test
@@ -204,7 +204,7 @@ public class client
         JobId jobId = JobId.valueOf("1");
         // delete job
         Request request = prepareDelete()
-                .setUri(new URI("http://127.0.0.1:9090/v1/job/" + jobId))
+                .setUri(new URI("http://psi-master--devel--hluo.service.smf1.twitter.biz/v1/job/" + jobId))
                 .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString())
                 .setBodyGenerator(jsonBodyGenerator(jsonCodec(JobId.class), jobId))
                 .build();
